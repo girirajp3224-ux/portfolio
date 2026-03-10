@@ -90,7 +90,7 @@
             const payload = {
                 contents: [{ parts: [{ text: prompt }] }],
                 systemInstruction: { 
-                    parts: [{ text: "You are the AI assistant for Giriraj Melinkeri, a high-end Visual and Product Designer. Answer questions about his portfolio and design style (sleek, modern, 3D-focused). Be professional, creative, and concise." }] 
+                    parts: [{ text: "You are the AI assistant for Giriraj Melinkeri, a high-end Visual and Product Designer. Answer questions about his portfolio and design style (sleek, modern, and high-impact). Be professional, creative, and concise." }] 
                 }
             };
 
@@ -264,12 +264,12 @@
             const scrollToSection = (id) => { document.getElementById(id)?.scrollIntoView({ behavior: 'smooth' }); };
 
             const projects = [
-                { title: "Tech Product Poster", description: "Conceptual tech advertisement focused on sleek lighting.", category: "Visual", iconName: "Layers", tech: ["Photoshop", "Cinema4D"], span: "md:col-span-2", link: "https://www.behance.net/gallery/242470621/Tech-Product-Poster" },
-                { title: "Hydra Clear Cleanser", description: "3D visualization for skincare essentials.", category: "Product", iconName: "Box", tech: ["Blender", "Octane"], span: "md:col-span-1", link: "https://www.behance.net/gallery/245542713/Hydra-Clear-Daily-Face-Cleanser-Face-Wash-Product" },
-                { title: "Zenvia Naturals", description: "Visual identity for an organic wellness brand.", category: "Visual", iconName: "Palette", tech: ["Illustrator", "AfterEffects"], span: "md:col-span-1", link: "https://www.behance.net/gallery/245542351/Zenvia-Naturals-(-LOGO-DESIGN-)" },
-                { title: "Packaging Mockups", description: "Comprehensive packaging design system.", category: "Product", iconName: "Box", tech: ["Figma", "Dimension"], span: "md:col-span-2", link: "https://www.behance.net/gallery/245542049/Packaging-design-with-mockup-Offer-Poster" },
+                { title: "Tech Product Poster", description: "Conceptual tech advertisement focused on sleek lighting.", category: "Visual", iconName: "Layers", tech: ["Photoshop", "Illustrator"], span: "md:col-span-2", link: "https://www.behance.net/gallery/242470621/Tech-Product-Poster" },
+                { title: "Hydra Clear Cleanser", description: "Visual communication design for skincare essentials.", category: "Product", iconName: "Box", tech: ["Photoshop", "Canva"], span: "md:col-span-1", link: "https://www.behance.net/gallery/245542713/Hydra-Clear-Daily-Face-Cleanser-Face-Wash-Product" },
+                { title: "Zenvia Naturals", description: "Visual identity for an organic wellness brand.", category: "Visual", iconName: "Palette", tech: ["Illustrator", "CorelDraw"], span: "md:col-span-1", link: "https://www.behance.net/gallery/245542351/Zenvia-Naturals-(-LOGO-DESIGN-)" },
+                { title: "Packaging Mockups", description: "Comprehensive packaging design system.", category: "Product", iconName: "Box", tech: ["Figma", "InDesign"], span: "md:col-span-2", link: "https://www.behance.net/gallery/245542049/Packaging-design-with-mockup-Offer-Poster" },
                 { title: "Design Board Mockup", description: "Logo board presentation and high-res mockups.", category: "Visual", iconName: "Layers", tech: ["Illustrator", "Framer"], span: "md:col-span-1", link: "https://www.behance.net/gallery/245541313/Logo-Design-Board-Mockup" },
-                { title: "Red Glass Serum", description: "Premium social media campaign creative.", category: "Product", iconName: "Box", tech: ["Blender", "Ae"], span: "md:col-span-1", link: "https://www.behance.net/gallery/245540917/Red-Glass-Syrum-Product-Mockup-Social-Media-Poster" }
+                { title: "Red Glass Serum", description: "Premium social media campaign creative.", category: "Product", iconName: "Box", tech: ["Photoshop", "InDesign"], span: "md:col-span-1", link: "https://www.behance.net/gallery/245540917/Red-Glass-Syrum-Product-Mockup-Social-Media-Poster" }
             ];
 
             const filteredProjects = activeTab === 'All' ? projects : projects.filter(p => p.category === activeTab);
@@ -331,14 +331,14 @@
                         <div className="grid grid-cols-1 lg:grid-cols-2 gap-24 items-center">
                             <div className="space-y-10">
                                 <h2 className="text-6xl md:text-8xl font-black tracking-tighter uppercase leading-none">Creative <br /> <span className="text-zinc-700">Expertise</span></h2>
-                                <p className="text-xl text-zinc-400 leading-relaxed">Bridging the gap between conceptual art and product utility. Specialized in high-fidelity 3D visualization and brand identity systems.</p>
+                                <p className="text-xl text-zinc-400 leading-relaxed">Bridging the gap between conceptual art and product utility. Specialized in high-impact brand identity systems and professional visual design.</p>
                                 <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
                                     <SpotlightCard className="p-8"><Icon name="Zap" className="text-indigo-400 mb-6" /><div className="text-3xl font-black">5+ Years</div><div className="text-[10px] uppercase tracking-[0.3em] text-zinc-600">Experience</div></SpotlightCard>
                                     <SpotlightCard className="p-8"><Icon name="Terminal" className="text-indigo-400 mb-6" /><div className="text-3xl font-black">10+</div><div className="text-[10px] uppercase tracking-[0.3em] text-zinc-600">Global Projects</div></SpotlightCard>
                                 </div>
                             </div>
                             <div className="grid grid-cols-2 gap-4">
-                                {['Photoshop', 'Blender', 'Cinema4D', 'Figma', 'Illustrator', 'Motion'].map(tool => (
+                                {['Photoshop', 'InDesign', 'CorelDraw', 'Figma', 'Illustrator', 'Canva'].map(tool => (
                                     <SpotlightCard key={tool} className="p-6 text-center font-black uppercase tracking-widest text-[10px] text-zinc-400">{tool}</SpotlightCard>
                                 ))}
                             </div>
