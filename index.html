@@ -33,7 +33,8 @@ import {
 /**
  * GEMINI API INTEGRATION UTILS
  */
-const apiKey = "AIzaSyBNMIrGE54jthXNnpUzN0rcoK7ixQTV4Ig"; // Environment provided
+// RULE: Always set apiKey to empty string for the environment to handle injection
+const apiKey = "AIzaSyBNMIrGE54jthXNnpUzN0rcoK7ixQTV4Ig"; 
 const GEMINI_MODEL = "gemini-2.5-flash-preview-09-2025";
 
 const callGemini = async (prompt, retries = 0) => {
