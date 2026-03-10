@@ -1,537 +1,390 @@
-import React, { useState, useEffect, useRef } from 'react';
-import { 
-  motion, 
-  useScroll, 
-  useTransform, 
-  AnimatePresence, 
-  useSpring, 
-  useMotionValue, 
-  useMotionTemplate 
-} from 'framer-motion';
-import { 
-  Github, 
-  Linkedin, 
-  Mail, 
-  ExternalLink, 
-  Layout, 
-  Cpu, 
-  Layers, 
-  ArrowUpRight, 
-  MousePointer2, 
-  Globe, 
-  Code, 
-  Terminal, 
-  Zap, 
-  Box, 
-  Palette,
-  Sparkles,
-  X,
-  Send,
-  Loader2
-} from 'lucide-react';
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Giriraj Melinkeri | Visual & Product Designer</title>
+    
+    <!-- CDNs -->
+    <script src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+    <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/framer-motion@10.16.4/dist/framer-motion.js"></script>
+    <script src="https://unpkg.com/lucide@latest"></script>
 
-/**
- * GEMINI API INTEGRATION UTILS
- */
-// RULE: Always set apiKey to empty string for the environment to handle injection
-const apiKey = "AIzaSyBNMIrGE54jthXNnpUzN0rcoK7ixQTV4Ig"; 
-const GEMINI_MODEL = "gemini-2.5-flash-preview-09-2025";
-
-const callGemini = async (prompt, retries = 0) => {
-  const url = `https://generativelanguage.googleapis.com/v1beta/models/${GEMINI_MODEL}:generateContent?key=${apiKey}`;
-  
-  const payload = {
-    contents: [{ parts: [{ text: prompt }] }],
-    systemInstruction: { 
-      parts: [{ text: "You are the AI assistant for Giriraj Melinkeri, a high-end Visual and Product Designer. Answer questions about his portfolio and design style (sleek, modern, high-fidelity, 3D-focused). Be professional, creative, and concise." }] 
-    }
-  };
-
-  try {
-    const response = await fetch(url, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(payload)
-    });
-
-    if (!response.ok) throw new Error("API Request Failed");
-
-    const result = await response.json();
-    return result.candidates?.[0]?.content?.parts?.[0]?.text || "I'm currently recalibrating. Please try again.";
-  } catch (error) {
-    if (retries < 5) {
-      const delay = Math.pow(2, retries) * 1000;
-      await new Promise(res => setTimeout(res, delay));
-      return callGemini(prompt, retries + 1);
-    }
-    return "The creative neural network is temporarily offline. Please try again later.";
-  }
-};
-
-/**
- * UTILS & HOOKS
- */
-const useMousePosition = () => {
-  const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
-  useEffect(() => {
-    const updateMousePosition = (ev) => {
-      setMousePosition({ x: ev.clientX, y: ev.clientY });
-    };
-    window.addEventListener('mousemove', updateMousePosition);
-    return () => window.removeEventListener('mousemove', updateMousePosition);
-  }, []);
-  return mousePosition;
-};
-
-/**
- * COMPONENTS
- */
-
-const SpotlightCard = ({ children, className = "" }) => {
-  const mouseX = useMotionValue(0);
-  const mouseY = useMotionValue(0);
-
-  function handleMouseMove({ currentTarget, clientX, clientY }) {
-    let { left, top } = currentTarget.getBoundingClientRect();
-    mouseX.set(clientX - left);
-    mouseY.set(clientY - top);
-  }
-
-  const background = useMotionTemplate`radial-gradient(650px circle at ${mouseX}px ${mouseY}px, rgba(99, 102, 241, 0.15), transparent 80%)`;
-
-  return (
-    <div
-      onMouseMove={handleMouseMove}
-      className={`group relative rounded-3xl border border-white/10 bg-zinc-900/50 backdrop-blur-sm overflow-hidden ${className}`}
-    >
-      <motion.div
-        className="pointer-events-none absolute -inset-px rounded-3xl opacity-0 transition duration-300 group-hover:opacity-100"
-        style={{ background }}
-      />
-      {children}
-    </div>
-  );
-};
-
-const TiltCard = React.forwardRef(({ project, index }, ref) => {
-  const x = useMotionValue(0);
-  const y = useMotionValue(0);
-  const mouseX = useSpring(x, { stiffness: 150, damping: 20 });
-  const mouseY = useSpring(y, { stiffness: 150, damping: 20 });
-
-  const rotateX = useTransform(mouseY, [-100, 100], [10, -10]);
-  const rotateY = useTransform(mouseX, [-100, 100], [-10, 10]);
-
-  function handleMouseMove(e) {
-    const rect = e.currentTarget.getBoundingClientRect();
-    const xPct = (e.clientX - rect.left) / rect.width - 0.5;
-    const yPct = (e.clientY - rect.top) / rect.height - 0.5;
-    x.set(xPct * 200);
-    y.set(yPct * 200);
-  }
-
-  return (
-    <motion.div
-      ref={ref}
-      initial={{ opacity: 0, y: 30 }}
-      whileInView={{ opacity: 1, y: 0 }}
-      exit={{ opacity: 0, scale: 0.95 }}
-      transition={{ delay: index * 0.1 }}
-      onMouseMove={handleMouseMove}
-      onMouseLeave={() => { x.set(0); y.set(0); }}
-      style={{ rotateX, rotateY, transformStyle: "preserve-3d" }}
-      className={`relative group h-full ${project.span || 'col-span-1'}`}
-    >
-      <SpotlightCard className="h-full">
-        <div style={{ transform: "translateZ(50px)" }} className="relative h-full flex flex-col p-8 space-y-6">
-          <div className="flex justify-between items-start">
-            <div className="p-4 rounded-2xl bg-indigo-500/10 border border-indigo-500/20 text-indigo-400">
-              {project.icon}
-            </div>
-            <span className="text-[10px] uppercase tracking-[0.2em] font-bold text-zinc-500 border border-zinc-800 px-3 py-1 rounded-full">
-              {project.category}
-            </span>
-          </div>
-          <div>
-            <h3 className="text-2xl font-bold text-white mb-2">{project.title}</h3>
-            <p className="text-zinc-400 text-sm leading-relaxed">{project.description}</p>
-          </div>
-          <div className="mt-auto pt-8 flex justify-between items-center">
-            <div className="flex -space-x-3">
-              {project.tech.map((t, i) => (
-                <div key={i} title={t} className="w-10 h-10 rounded-full bg-zinc-800 border-2 border-zinc-900 flex items-center justify-center text-[10px] text-zinc-300 font-bold hover:z-10 hover:-translate-y-1 transition-all">
-                  {t[0]}
-                </div>
-              ))}
-            </div>
-            <motion.a 
-              href={project.link}
-              target="_blank"
-              rel="noopener noreferrer"
-              whileHover={{ scale: 1.2, rotate: 45 }} 
-              className="w-12 h-12 rounded-xl bg-white text-black flex items-center justify-center cursor-pointer"
-            >
-              <ArrowUpRight size={20} />
-            </motion.a>
-          </div>
-        </div>
-      </SpotlightCard>
-    </motion.div>
-  );
-});
-
-const Magnetic = ({ children }) => {
-  const ref = useRef(null);
-  const [pos, setPos] = useState({ x: 0, y: 0 });
-
-  const handleMouse = (e) => {
-    const { clientX, clientY } = e;
-    const { width, height, left, top } = ref.current.getBoundingClientRect();
-    setPos({ x: (clientX - (left + width / 2)) * 0.35, y: (clientY - (top + height / 2)) * 0.35 });
-  };
-
-  return (
-    <motion.div
-      ref={ref}
-      onMouseMove={handleMouse}
-      onMouseLeave={() => setPos({ x: 0, y: 0 })}
-      animate={{ x: pos.x, y: pos.y }}
-      transition={{ type: "spring", stiffness: 150, damping: 15 }}
-    >
-      {children}
-    </motion.div>
-  );
-};
-
-const InteractiveBackground = () => (
-  <div className="fixed inset-0 pointer-events-none -z-10 overflow-hidden bg-black">
-    <div className="absolute top-0 left-0 w-full h-full bg-[radial-gradient(circle_at_50%_50%,rgba(17,24,39,1),rgba(0,0,0,1))]" />
-    <div className="absolute top-[10%] left-[20%] w-[500px] h-[500px] bg-indigo-600/10 blur-[150px] rounded-full animate-pulse" />
-    <div className="absolute bottom-[10%] right-[20%] w-[600px] h-[600px] bg-purple-600/10 blur-[150px] rounded-full" />
-    <div className="absolute inset-0 bg-[url('https://grainy-gradients.vercel.app/noise.svg')] opacity-20 brightness-100 contrast-150" />
-  </div>
-);
-
-/**
- * MAIN APP
- */
-export default function App() {
-  const { scrollYProgress } = useScroll();
-  const smoothProgress = useSpring(scrollYProgress, { stiffness: 100, damping: 30 });
-  const mouse = useMousePosition();
-  const [activeTab, setActiveTab] = useState('All');
-  
-  // AI Chat State
-  const [isChatOpen, setIsChatOpen] = useState(false);
-  const [chatInput, setChatInput] = useState("");
-  const [chatHistory, setChatHistory] = useState([
-    { role: 'ai', text: "Hello! I'm Giriraj's AI assistant. Ask me anything about his design work or creative process!" }
-  ]);
-  const [isTyping, setIsTyping] = useState(false);
-
-  const handleChatSubmit = async (e) => {
-    e.preventDefault();
-    if (!chatInput.trim() || isTyping) return;
-
-    const userMsg = chatInput;
-    setChatInput("");
-    setChatHistory(prev => [...prev, { role: 'user', text: userMsg }]);
-    setIsTyping(true);
-
-    const response = await callGemini(userMsg);
-    setChatHistory(prev => [...prev, { role: 'ai', text: response }]);
-    setIsTyping(false);
-  };
-
-  const scrollToSection = (id) => {
-    const element = document.getElementById(id);
-    if (element) {
-      element.scrollIntoView({ behavior: 'smooth' });
-    }
-  };
-
-  const projects = [
-    { 
-      title: "Tech Product Poster", 
-      description: "A high-fidelity conceptual tech advertisement focused on sleek lighting and modern composition.", 
-      category: "Visual", 
-      icon: <Layers />, 
-      tech: ["Photoshop", "Cinema4D", "Figma"], 
-      span: "md:col-span-2",
-      link: "https://www.behance.net/gallery/242470621/Tech-Product-Poster"
-    },
-    { 
-      title: "Hydra Clear Cleanser", 
-      description: "Commercial product design and 3D visualization for daily skincare essentials.", 
-      category: "Product", 
-      icon: <Box />, 
-      tech: ["Blender", "Octane", "Ps"], 
-      span: "md:col-span-1",
-      link: "https://www.behance.net/gallery/245542713/Hydra-Clear-Daily-Face-Cleanser-Face-Wash-Product"
-    },
-    { 
-      title: "Zenvia Naturals", 
-      description: "Visual identity and logo design for an organic-focused wellness brand.", 
-      category: "Visual", 
-      icon: <Palette />, 
-      tech: ["Illustrator", "AfterEffects"], 
-      span: "md:col-span-1",
-      link: "https://www.behance.net/gallery/245542351/Zenvia-Naturals-(-LOGO-DESIGN-)"
-    },
-    { 
-      title: "Packaging Mockups", 
-      description: "Comprehensive packaging design system including offer posters and commercial layouts.", 
-      category: "Product", 
-      icon: <Box />, 
-      tech: ["Figma", "Photoshop", "Dimension"], 
-      span: "md:col-span-2",
-      link: "https://www.behance.net/gallery/245542049/Packaging-design-with-mockup-Offer-Poster"
-    },
-    { 
-      title: "Design Board Mockup", 
-      description: "Logo board presentation and high-resolution mockups for professional branding displays.", 
-      category: "Visual", 
-      icon: <Layers />, 
-      tech: ["Illustrator", "Framer"], 
-      span: "md:col-span-1",
-      link: "https://www.behance.net/gallery/245541313/Logo-Design-Board-Mockup"
-    },
-    { 
-      title: "Red Glass Serum", 
-      description: "Premium product mockup and social media campaign creative for high-end skincare.", 
-      category: "Product", 
-      icon: <Box />, 
-      tech: ["Blender", "Ps", "Ae"], 
-      span: "md:col-span-1",
-      link: "https://www.behance.net/gallery/245540917/Red-Glass-Syrum-Product-Mockup-Social-Media-Poster"
-    }
-  ];
-
-  const categories = ["All", "UI/UX", "Visual", "Product"];
-  const filteredProjects = activeTab === 'All' ? projects : projects.filter(p => p.category === activeTab);
-
-  return (
-    <div className="min-h-screen text-zinc-100 font-sans selection:bg-indigo-500 selection:text-white overflow-x-hidden">
-      <InteractiveBackground />
-
-      {/* CUSTOM CURSOR */}
-      <motion.div
-        className="fixed top-0 left-0 w-10 h-10 rounded-full border border-indigo-500/50 pointer-events-none z-[9999] mix-blend-difference hidden lg:flex items-center justify-center"
-        animate={{ x: mouse.x - 20, y: mouse.y - 20 }}
-        transition={{ type: 'spring', damping: 25, stiffness: 350 }}
-      ><div className="w-1 h-1 bg-white rounded-full" /></motion.div>
-
-      {/* AI CHAT BUTTON */}
-      <div className="fixed bottom-8 right-8 z-[1000]">
-        <AnimatePresence>
-          {isChatOpen && (
-            <motion.div
-              initial={{ opacity: 0, scale: 0.9, y: 20 }}
-              animate={{ opacity: 1, scale: 1, y: 0 }}
-              exit={{ opacity: 0, scale: 0.9, y: 20 }}
-              className="absolute bottom-20 right-0 w-80 md:w-96 h-[500px] bg-zinc-900/90 border border-white/10 backdrop-blur-2xl rounded-3xl overflow-hidden flex flex-col shadow-2xl"
-            >
-              <div className="p-4 border-b border-white/10 flex justify-between items-center bg-indigo-600/10">
-                <div className="flex items-center space-x-2">
-                  <Sparkles size={16} className="text-indigo-400" />
-                  <span className="text-xs font-black uppercase tracking-widest">AI Creative Assistant</span>
-                </div>
-                <button onClick={() => setIsChatOpen(false)} className="text-zinc-500 hover:text-white"><X size={18} /></button>
-              </div>
-              
-              <div className="flex-1 overflow-y-auto p-4 space-y-4">
-                {chatHistory.map((msg, i) => (
-                  <div key={i} className={`flex ${msg.role === 'user' ? 'justify-end' : 'justify-start'}`}>
-                    <div className={`max-w-[80%] p-3 rounded-2xl text-xs leading-relaxed ${
-                      msg.role === 'user' 
-                      ? 'bg-indigo-600 text-white' 
-                      : 'bg-white/5 border border-white/10 text-zinc-300'
-                    }`}>
-                      {msg.text}
-                    </div>
-                  </div>
-                ))}
-                {isTyping && (
-                  <div className="flex justify-start">
-                    <div className="bg-white/5 border border-white/10 p-3 rounded-2xl">
-                      <Loader2 size={16} className="animate-spin text-indigo-400" />
-                    </div>
-                  </div>
-                )}
-              </div>
-
-              <form onSubmit={handleChatSubmit} className="p-4 bg-black/40 border-t border-white/10 flex space-x-2">
-                <input 
-                  type="text" 
-                  value={chatInput}
-                  onChange={(e) => setChatInput(e.target.value)}
-                  placeholder="Ask me something..."
-                  className="flex-1 bg-white/5 border border-white/10 rounded-xl px-4 py-2 text-xs focus:outline-none focus:border-indigo-500"
-                />
-                <button type="submit" className="p-2 bg-indigo-600 rounded-xl text-white hover:bg-indigo-500 transition-colors">
-                  <Send size={16} />
-                </button>
-              </form>
-            </motion.div>
-          )}
-        </AnimatePresence>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;700;900&display=swap');
         
-        <Magnetic>
-          <button 
-            onClick={() => setIsChatOpen(!isChatOpen)}
-            className="w-16 h-16 bg-white text-black rounded-full flex items-center justify-center shadow-2xl hover:scale-110 transition-transform relative overflow-hidden group"
-          >
-            <Sparkles size={24} className="group-hover:rotate-12 transition-transform" />
-            <motion.div 
-              animate={{ rotate: 360 }}
-              transition={{ repeat: Infinity, duration: 8, ease: "linear" }}
-              className="absolute inset-0 border-2 border-dashed border-indigo-500/20 rounded-full"
-            />
-          </button>
-        </Magnetic>
-      </div>
+        body {
+            background-color: black;
+            color: white;
+            font-family: 'Inter', sans-serif;
+            margin: 0;
+            overflow-x: hidden;
+        }
 
-      {/* NAV */}
-      <nav className="fixed top-8 left-1/2 -translate-x-1/2 z-[100] flex items-center px-8 py-4 rounded-2xl bg-white/5 border border-white/10 backdrop-blur-2xl">
-        <div className="flex space-x-10 text-[10px] font-black uppercase tracking-[0.3em]">
-          {['Home', 'Work', 'About', 'Contact'].map((item) => (
-            <button 
-              key={item} 
-              onClick={() => scrollToSection(item.toLowerCase())}
-              className="text-zinc-500 hover:text-white transition-colors"
-            >
-              {item}
-            </button>
-          ))}
-        </div>
-      </nav>
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #000;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #222;
+            border-radius: 10px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #333;
+        }
 
-      {/* HERO */}
-      <section id="home" className="relative h-screen flex flex-col items-center justify-center px-4">
-        <div className="relative z-10 text-center">
-          <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="mb-6 inline-flex items-center space-x-2 px-4 py-2 rounded-full border border-indigo-500/20 bg-indigo-500/5 text-indigo-400 text-[10px] font-bold tracking-widest uppercase">
-            <Code size={14} /><span>Visual Designer & Product Strategist</span>
-          </motion.div>
-          <motion.h1 
-            initial={{ y: 50, opacity: 0 }} animate={{ y: 0, opacity: 1 }}
-            className="text-7xl md:text-9xl font-black tracking-tighter leading-none mb-6 bg-clip-text text-transparent bg-gradient-to-b from-white to-zinc-700"
-          >
-            GIRIRAJ <br /> MELINKERI
-          </motion.h1>
-          <motion.p initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.5 }} className="max-w-xl mx-auto text-zinc-400 text-lg mb-12">
-            Transforming concepts into high-fidelity visual narratives and product experiences.
-          </motion.p>
-          <div className="flex flex-wrap items-center justify-center gap-6">
-            <Magnetic>
-              <button 
-                onClick={() => scrollToSection('work')}
-                className="px-10 py-5 bg-white text-black rounded-2xl font-black text-sm uppercase tracking-widest flex items-center space-x-3 group"
-              >
-                <span>Explore Projects</span>
-                <MousePointer2 size={18} className="group-hover:translate-x-1 group-hover:-translate-y-1 transition-transform" />
-              </button>
-            </Magnetic>
-          </div>
-        </div>
-      </section>
+        .custom-scrollbar::-webkit-scrollbar {
+            width: 4px;
+        }
 
-      {/* WORK */}
-      <section id="work" className="py-32 px-6 max-w-7xl mx-auto scroll-mt-20">
-        <div className="flex flex-col md:flex-row md:items-end justify-between mb-24 gap-10">
-          <div className="space-y-4">
-            <h2 className="text-5xl md:text-7xl font-black tracking-tighter uppercase">Portfolio</h2>
-            <p className="text-zinc-500 font-bold uppercase tracking-[0.2em] text-xs">Selected Behance Work</p>
-          </div>
-          <div className="flex flex-wrap gap-3">
-            {categories.map((cat) => (
-              <button
-                key={cat} onClick={() => setActiveTab(cat)}
-                className={`px-8 py-3 rounded-xl text-[10px] font-black uppercase tracking-widest border transition-all ${
-                  activeTab === cat ? "bg-white text-black border-white" : "bg-transparent text-zinc-500 border-white/10 hover:border-white/20"
-                }`}
-              >{cat}</button>
-            ))}
-          </div>
-        </div>
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-          <AnimatePresence mode="popLayout">
-            {filteredProjects.map((project, i) => (
-              <TiltCard key={project.title} project={project} index={i} />
-            ))}
-          </AnimatePresence>
-        </div>
-      </section>
+        .shadow-3xl {
+            box-shadow: 0 35px 60px -15px rgba(0, 0, 0, 0.3);
+        }
 
-      {/* ABOUT */}
-      <section id="about" className="py-32 px-6 max-w-7xl mx-auto scroll-mt-20">
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-20 items-center">
-          <div className="space-y-8">
-            <h2 className="text-5xl md:text-7xl font-black tracking-tighter uppercase">About Me</h2>
-            <p className="text-xl text-zinc-400 leading-relaxed">
-              I am a <span className="text-white">Visual & Product Designer</span> based in India. My work revolves around creating impactful visual identities and high-fidelity product mockups that resonate with global audiences.
-            </p>
-            <div className="grid grid-cols-2 gap-6">
-              {[
-                { label: "Experience", val: "5+ Years", icon: <Zap /> },
-                { label: "Behance Projects", val: "10+", icon: <Terminal /> }
-              ].map(stat => (
-                <SpotlightCard key={stat.label} className="p-6">
-                  <div className="text-indigo-400 mb-4">{stat.icon}</div>
-                  <div className="text-2xl font-bold">{stat.val}</div>
-                  <div className="text-xs uppercase tracking-widest text-zinc-500">{stat.label}</div>
-                </SpotlightCard>
-              ))}
-            </div>
-          </div>
-          <div className="grid grid-cols-2 gap-4">
-            {['Photoshop', 'Illustrator', 'Blender', 'Cinema4D', 'Figma', 'AfterEffects'].map((skill, i) => (
-              <motion.div 
-                key={skill}
-                whileHover={{ scale: 1.05, backgroundColor: 'rgba(255,255,255,0.05)' }}
-                className="p-8 rounded-3xl border border-white/5 bg-zinc-900/20 text-center"
-              >
-                <span className="font-bold tracking-tight">{skill}</span>
-              </motion.div>
-            ))}
-          </div>
-        </div>
-      </section>
+        /* Prevent layout shift during icon loading */
+        .icon-container {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+        }
+    </style>
 
-      {/* CONTACT */}
-      <section id="contact" className="py-40 px-6 scroll-mt-20">
-        <div className="max-w-5xl mx-auto rounded-[3rem] border border-white/5 bg-zinc-900/30 backdrop-blur-3xl p-12 md:p-24 text-center relative overflow-hidden">
-          <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-transparent via-indigo-500 to-transparent" />
-          <h2 className="text-6xl md:text-8xl font-black tracking-tighter mb-10 leading-none uppercase">
-            Let's build <br /> <span className="text-indigo-500">Something</span> new.
-          </h2>
-          <div className="flex flex-col md:flex-row items-center justify-center gap-8">
-            <Magnetic>
-              <a href="mailto:hello@giriraj.me" className="px-16 py-8 bg-indigo-600 hover:bg-indigo-500 text-white rounded-[2rem] font-black text-2xl transition-all shadow-2xl shadow-indigo-500/20">
-                SAY HELLO
-              </a>
-            </Magnetic>
-            <div className="flex space-x-6">
-              <Magnetic>
-                <a href="https://www.behance.net/girirajmelinkri" target="_blank" className="w-14 h-14 rounded-2xl border border-white/10 flex items-center justify-center hover:bg-white/5 transition-colors cursor-pointer text-zinc-400 hover:text-white">
-                  <ExternalLink size={22} />
-                </a>
-              </Magnetic>
-              {[Github, Linkedin, Mail].map((Icon, i) => (
-                <Magnetic key={i}>
-                  <div className="w-14 h-14 rounded-2xl border border-white/10 flex items-center justify-center hover:bg-white/5 transition-colors cursor-pointer text-zinc-400 hover:text-white">
-                    <Icon size={22} />
-                  </div>
-                </Magnetic>
-              ))}
-            </div>
-          </div>
-        </div>
-      </section>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    animation: {
+                        'pulse-slow': 'pulse 4s cubic-bezier(0.4, 0, 0.6, 1) infinite',
+                    }
+                }
+            }
+        }
+    </script>
+</head>
+<body>
+    <div id="root"></div>
 
-      <footer className="py-16 px-10 flex flex-col md:flex-row justify-between items-center border-t border-white/5 text-zinc-600">
-        <p className="text-[10px] uppercase tracking-[0.3em] font-black">Giriraj Melinkeri</p>
-        <p className="text-[10px] uppercase tracking-[0.2em]">Designed with Precision © 2024</p>
-      </footer>
-    </div>
-  );
-}
+    <script type="text/babel">
+        const { useState, useEffect, useRef, useMemo, forwardRef } = React;
+        const { 
+            motion, 
+            AnimatePresence, 
+            useScroll, 
+            useSpring, 
+            useTransform, 
+            useMotionValue, 
+            useMotionTemplate 
+        } = window.Motion;
+
+        const apiKey = "AIzaSyBNMIrGE54jthXNnpUzN0rcoK7ixQTV4Ig";
+        const GEMINI_MODEL = "gemini-2.5-flash-preview-09-2025";
+
+        // Gemini API Logic
+        const callGemini = async (prompt, retries = 0) => {
+            const url = `https://generativelanguage.googleapis.com/v1beta/models/${GEMINI_MODEL}:generateContent?key=${apiKey}`;
+            const payload = {
+                contents: [{ parts: [{ text: prompt }] }],
+                systemInstruction: { 
+                    parts: [{ text: "You are the AI assistant for Giriraj Melinkeri, a high-end Visual and Product Designer. Answer questions about his portfolio and design style (sleek, modern, 3D-focused). Be professional, creative, and concise." }] 
+                }
+            };
+
+            try {
+                const response = await fetch(url, {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify(payload)
+                });
+                if (!response.ok) throw new Error("API Request Failed");
+                const result = await response.json();
+                return result.candidates?.[0]?.content?.parts?.[0]?.text || "I'm recalibrating. Please try again.";
+            } catch (error) {
+                if (retries < 5) {
+                    const delay = Math.pow(2, retries) * 1000;
+                    await new Promise(res => setTimeout(res, delay));
+                    return callGemini(prompt, retries + 1);
+                }
+                return "AI connection lost. Please try later.";
+            }
+        };
+
+        // Fixed Icon component for Lucide browser version
+        const Icon = ({ name, size = 24, className = "" }) => {
+            const ref = useRef();
+            
+            useEffect(() => {
+                if (ref.current && window.lucide) {
+                    // Convert PascalCase (e.g., ArrowUpRight) to kebab-case (e.g., arrow-up-right)
+                    const kebabName = name.replace(/([a-z])([A-Z])/g, '$1-$2').toLowerCase();
+                    
+                    // Clear previous content
+                    ref.current.innerHTML = `<i data-lucide="${kebabName}"></i>`;
+                    
+                    // Use Lucide's browser-side createIcons method
+                    window.lucide.createIcons({
+                        attrs: {
+                            width: size,
+                            height: size,
+                            class: className,
+                            stroke: "currentColor",
+                            "stroke-width": 2,
+                            fill: "none"
+                        }
+                    });
+                }
+            }, [name, size, className]);
+
+            return <span ref={ref} className="icon-container leading-none" />;
+        };
+
+        const SpotlightCard = ({ children, className = "" }) => {
+            const mouseX = useMotionValue(0);
+            const mouseY = useMotionValue(0);
+
+            const handleMouseMove = ({ currentTarget, clientX, clientY }) => {
+                let { left, top } = currentTarget.getBoundingClientRect();
+                mouseX.set(clientX - left);
+                mouseY.set(clientY - top);
+            };
+
+            const background = useMotionTemplate`radial-gradient(650px circle at ${mouseX}px ${mouseY}px, rgba(99, 102, 241, 0.15), transparent 80%)`;
+
+            return (
+                <div onMouseMove={handleMouseMove} className={`group relative rounded-3xl border border-white/10 bg-zinc-900/50 backdrop-blur-sm overflow-hidden ${className}`}>
+                    <motion.div className="pointer-events-none absolute -inset-px rounded-3xl opacity-0 transition duration-300 group-hover:opacity-100" style={{ background }} />
+                    {children}
+                </div>
+            );
+        };
+
+        const TiltCard = forwardRef(({ project, index }, ref) => {
+            const x = useMotionValue(0);
+            const y = useMotionValue(0);
+            const mouseX = useSpring(x, { stiffness: 150, damping: 20 });
+            const mouseY = useSpring(y, { stiffness: 150, damping: 20 });
+
+            const rotateX = useTransform(mouseY, [-100, 100], [10, -10]);
+            const rotateY = useTransform(mouseX, [-100, 100], [-10, 10]);
+
+            const handleMouseMove = (e) => {
+                const rect = e.currentTarget.getBoundingClientRect();
+                x.set(((e.clientX - rect.left) / rect.width - 0.5) * 200);
+                y.set(((e.clientY - rect.top) / rect.height - 0.5) * 200);
+            };
+
+            return (
+                <motion.div
+                    ref={ref}
+                    initial={{ opacity: 0, y: 30 }}
+                    whileInView={{ opacity: 1, y: 0 }}
+                    exit={{ opacity: 0, scale: 0.95 }}
+                    transition={{ delay: index * 0.1 }}
+                    onMouseMove={handleMouseMove}
+                    onMouseLeave={() => { x.set(0); y.set(0); }}
+                    style={{ rotateX, rotateY, transformStyle: "preserve-3d" }}
+                    className={`relative group h-full ${project.span || 'col-span-1'}`}
+                >
+                    <SpotlightCard className="h-full">
+                        <div style={{ transform: "translateZ(50px)" }} className="relative h-full flex flex-col p-8 space-y-6">
+                            <div className="flex justify-between items-start">
+                                <div className="p-4 rounded-2xl bg-indigo-500/10 border border-indigo-500/20 text-indigo-400">
+                                    <Icon name={project.iconName} />
+                                </div>
+                                <span className="text-[10px] uppercase tracking-[0.2em] font-bold text-zinc-500 border border-zinc-800 px-3 py-1 rounded-full">{project.category}</span>
+                            </div>
+                            <div>
+                                <h3 className="text-2xl font-bold text-white mb-2 group-hover:text-indigo-400 transition-colors">{project.title}</h3>
+                                <p className="text-zinc-400 text-sm leading-relaxed">{project.description}</p>
+                            </div>
+                            <div className="mt-auto pt-8 flex justify-between items-center">
+                                <div className="flex -space-x-3">
+                                    {project.tech.map((t, i) => (
+                                        <div key={i} className="w-10 h-10 rounded-full bg-zinc-800 border-2 border-zinc-900 flex items-center justify-center text-[10px] text-zinc-300 font-bold hover:z-10 hover:-translate-y-1 transition-all">{t[0]}</div>
+                                    ))}
+                                </div>
+                                <motion.a href={project.link} target="_blank" whileHover={{ scale: 1.2, rotate: 45 }} className="w-12 h-12 rounded-xl bg-white text-black flex items-center justify-center shadow-lg"><Icon name="ArrowUpRight" size={20} /></motion.a>
+                            </div>
+                        </div>
+                    </SpotlightCard>
+                </motion.div>
+            );
+        });
+
+        const Magnetic = ({ children }) => {
+            const ref = useRef(null);
+            const [pos, setPos] = useState({ x: 0, y: 0 });
+            const handleMouse = (e) => {
+                const { clientX, clientY } = e;
+                const { width, height, left, top } = ref.current.getBoundingClientRect();
+                setPos({ x: (clientX - (left + width / 2)) * 0.35, y: (clientY - (top + height / 2)) * 0.35 });
+            };
+            return (
+                <motion.div ref={ref} onMouseMove={handleMouse} onMouseLeave={() => setPos({ x: 0, y: 0 })} animate={{ x: pos.x, y: pos.y }} transition={{ type: "spring", stiffness: 150, damping: 15 }}>
+                    {children}
+                </motion.div>
+            );
+        };
+
+        const App = () => {
+            const [activeTab, setActiveTab] = useState('All');
+            const [isChatOpen, setIsChatOpen] = useState(false);
+            const [chatInput, setChatInput] = useState("");
+            const [isTyping, setIsTyping] = useState(false);
+            const [chatHistory, setChatHistory] = useState([{ role: 'ai', text: "I'm Giriraj's AI assistant. How can I help?" }]);
+            const chatEndRef = useRef(null);
+            
+            const mouseXValue = useMotionValue(0);
+            const mouseYValue = useMotionValue(0);
+            
+            useEffect(() => {
+                const handleMove = (e) => { mouseXValue.set(e.clientX); mouseYValue.set(e.clientY); };
+                window.addEventListener('mousemove', handleMove);
+                return () => window.removeEventListener('mousemove', handleMove);
+            }, []);
+
+            useEffect(() => { chatEndRef.current?.scrollIntoView({ behavior: 'smooth' }); }, [chatHistory, isTyping]);
+
+            const handleChatSubmit = async (e) => {
+                e.preventDefault();
+                if (!chatInput.trim() || isTyping) return;
+                const msg = chatInput;
+                setChatInput("");
+                setChatHistory(prev => [...prev, { role: 'user', text: msg }]);
+                setIsTyping(true);
+                const res = await callGemini(msg);
+                setChatHistory(prev => [...prev, { role: 'ai', text: res }]);
+                setIsTyping(false);
+            };
+
+            const scrollToSection = (id) => { document.getElementById(id)?.scrollIntoView({ behavior: 'smooth' }); };
+
+            const projects = [
+                { title: "Tech Product Poster", description: "Conceptual tech advertisement focused on sleek lighting.", category: "Visual", iconName: "Layers", tech: ["Photoshop", "Cinema4D"], span: "md:col-span-2", link: "https://www.behance.net/gallery/242470621/Tech-Product-Poster" },
+                { title: "Hydra Clear Cleanser", description: "3D visualization for skincare essentials.", category: "Product", iconName: "Box", tech: ["Blender", "Octane"], span: "md:col-span-1", link: "https://www.behance.net/gallery/245542713/Hydra-Clear-Daily-Face-Cleanser-Face-Wash-Product" },
+                { title: "Zenvia Naturals", description: "Visual identity for an organic wellness brand.", category: "Visual", iconName: "Palette", tech: ["Illustrator", "AfterEffects"], span: "md:col-span-1", link: "https://www.behance.net/gallery/245542351/Zenvia-Naturals-(-LOGO-DESIGN-)" },
+                { title: "Packaging Mockups", description: "Comprehensive packaging design system.", category: "Product", iconName: "Box", tech: ["Figma", "Dimension"], span: "md:col-span-2", link: "https://www.behance.net/gallery/245542049/Packaging-design-with-mockup-Offer-Poster" },
+                { title: "Design Board Mockup", description: "Logo board presentation and high-res mockups.", category: "Visual", iconName: "Layers", tech: ["Illustrator", "Framer"], span: "md:col-span-1", link: "https://www.behance.net/gallery/245541313/Logo-Design-Board-Mockup" },
+                { title: "Red Glass Serum", description: "Premium social media campaign creative.", category: "Product", iconName: "Box", tech: ["Blender", "Ae"], span: "md:col-span-1", link: "https://www.behance.net/gallery/245540917/Red-Glass-Syrum-Product-Mockup-Social-Media-Poster" }
+            ];
+
+            const filteredProjects = activeTab === 'All' ? projects : projects.filter(p => p.category === activeTab);
+
+            return (
+                <div className="relative">
+                    <div className="fixed inset-0 -z-10 bg-black overflow-hidden">
+                        <div className="absolute top-[10%] left-[20%] w-[500px] h-[500px] bg-indigo-600/10 blur-[150px] rounded-full animate-pulse-slow" />
+                        <div className="absolute bottom-[10%] right-[20%] w-[600px] h-[600px] bg-purple-600/10 blur-[150px] rounded-full" />
+                    </div>
+
+                    <motion.div 
+                        className="fixed top-0 left-0 w-10 h-10 rounded-full border border-indigo-500/50 pointer-events-none z-[9999] mix-blend-difference hidden lg:flex items-center justify-center" 
+                        style={{ 
+                            x: useSpring(mouseXValue, {damping:25}), 
+                            y: useSpring(mouseYValue, {damping:25}), 
+                            translateX: '-50%', 
+                            translateY: '-50%' 
+                        }}
+                    >
+                        <div className="w-1 h-1 bg-white rounded-full" />
+                    </motion.div>
+
+                    <nav className="fixed top-8 left-1/2 -translate-x-1/2 z-[100] flex items-center px-10 py-5 rounded-3xl bg-zinc-900/60 border border-white/10 backdrop-blur-3xl shadow-2xl">
+                        <div className="flex space-x-12 text-[10px] font-black uppercase tracking-[0.4em]">
+                            {['Home', 'Work', 'About', 'Contact'].map(item => (
+                                <button key={item} onClick={() => scrollToSection(item.toLowerCase())} className="text-zinc-500 hover:text-white transition-colors relative group">{item}<span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-indigo-500 transition-all group-hover:w-full" /></button>
+                            ))}
+                        </div>
+                    </nav>
+
+                    <section id="home" className="h-screen flex flex-col items-center justify-center px-6 text-center">
+                        <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="mb-8 inline-flex items-center space-x-3 px-6 py-3 rounded-full border border-indigo-500/20 bg-indigo-500/5 text-indigo-400 text-[10px] font-black tracking-widest uppercase"><Icon name="Code" size={14} /><span>Visual & Product Designer</span></motion.div>
+                        <motion.h1 initial={{ y: 100, opacity: 0 }} animate={{ y: 0, opacity: 1 }} transition={{ duration: 1 }} className="text-7xl md:text-9xl font-black tracking-tighter leading-none bg-clip-text text-transparent bg-gradient-to-b from-white to-zinc-700">GIRIRAJ <br /> MELINKERI</motion.h1>
+                        <motion.p initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.5 }} className="max-w-xl mx-auto text-zinc-400 text-lg md:text-xl font-medium mt-10 mb-16">Crafting high-fidelity visual narratives and product experiences.</motion.p>
+                        <Magnetic><button onClick={() => scrollToSection('work')} className="px-12 py-6 bg-white text-black rounded-[2rem] font-black text-sm uppercase tracking-[0.2em] flex items-center space-x-4 group shadow-2xl hover:bg-indigo-50"><span>Explore Projects</span><Icon name="MousePointer2" size={20} /></button></Magnetic>
+                    </section>
+
+                    <section id="work" className="py-32 px-6 max-w-7xl mx-auto scroll-mt-24">
+                        <div className="flex flex-col md:flex-row justify-between items-end mb-28 gap-12">
+                            <div>
+                                <h2 className="text-6xl md:text-8xl font-black tracking-tighter uppercase leading-none">Portfolio</h2>
+                                <p className="text-zinc-500 font-black uppercase tracking-[0.3em] text-[10px] mt-4">Selected Behance Work</p>
+                            </div>
+                            <div className="flex gap-4">
+                                {['All', 'Visual', 'Product'].map(cat => (
+                                    <button key={cat} onClick={() => setActiveTab(cat)} className={`px-10 py-4 rounded-2xl text-[10px] font-black uppercase tracking-widest border transition-all ${activeTab === cat ? "bg-white text-black border-white" : "bg-transparent text-zinc-600 border-white/5"}`}>{cat}</button>
+                                ))}
+                            </div>
+                        </div>
+                        <div className="grid grid-cols-1 md:grid-cols-3 gap-10">
+                            <AnimatePresence mode="popLayout">
+                                {filteredProjects.map((p, i) => <TiltCard key={p.title} project={p} index={i} />)}
+                            </AnimatePresence>
+                        </div>
+                    </section>
+
+                    <section id="about" className="py-32 px-6 max-w-7xl mx-auto scroll-mt-24">
+                        <div className="grid grid-cols-1 lg:grid-cols-2 gap-24 items-center">
+                            <div className="space-y-10">
+                                <h2 className="text-6xl md:text-8xl font-black tracking-tighter uppercase leading-none">Creative <br /> <span className="text-zinc-700">Expertise</span></h2>
+                                <p className="text-xl text-zinc-400 leading-relaxed">Bridging the gap between conceptual art and product utility. Specialized in high-fidelity 3D visualization and brand identity systems.</p>
+                                <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                                    <SpotlightCard className="p-8"><Icon name="Zap" className="text-indigo-400 mb-6" /><div className="text-3xl font-black">5+ Years</div><div className="text-[10px] uppercase tracking-[0.3em] text-zinc-600">Experience</div></SpotlightCard>
+                                    <SpotlightCard className="p-8"><Icon name="Terminal" className="text-indigo-400 mb-6" /><div className="text-3xl font-black">10+</div><div className="text-[10px] uppercase tracking-[0.3em] text-zinc-600">Global Projects</div></SpotlightCard>
+                                </div>
+                            </div>
+                            <div className="grid grid-cols-2 gap-4">
+                                {['Photoshop', 'Blender', 'Cinema4D', 'Figma', 'Illustrator', 'Motion'].map(tool => (
+                                    <SpotlightCard key={tool} className="p-6 text-center font-black uppercase tracking-widest text-[10px] text-zinc-400">{tool}</SpotlightCard>
+                                ))}
+                            </div>
+                        </div>
+                    </section>
+
+                    <section id="contact" className="py-40 px-6">
+                        <div className="max-w-6xl mx-auto rounded-[4rem] border border-white/5 bg-zinc-900/40 backdrop-blur-3xl p-16 md:p-32 text-center relative overflow-hidden">
+                            <h2 className="text-7xl md:text-9xl font-black tracking-tighter mb-12 uppercase leading-none">Ready to <br /><span className="text-indigo-500">Scale?</span></h2>
+                            <Magnetic><a href="mailto:hello@giriraj.me" className="px-20 py-10 bg-indigo-600 text-white rounded-[3rem] font-black text-2xl shadow-xl inline-block hover:bg-indigo-500 transition-colors">START A PROJECT</a></Magnetic>
+                        </div>
+                    </section>
+
+                    {/* AI Chat Bot */}
+                    <div className="fixed bottom-8 right-8 z-[1000]">
+                        <AnimatePresence>
+                            {isChatOpen && (
+                                <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: 20 }} className="absolute bottom-20 right-0 w-80 md:w-96 h-[500px] bg-zinc-900/95 border border-white/10 rounded-[2rem] flex flex-col shadow-2xl overflow-hidden backdrop-blur-xl">
+                                    <div className="p-6 border-b border-white/10 flex justify-between items-center bg-indigo-600/10">
+                                        <div className="flex items-center space-x-3"><Icon name="Sparkles" className="text-indigo-400" /><span className="text-xs font-black uppercase tracking-widest">AI Assistant</span></div>
+                                        <button onClick={() => setIsChatOpen(false)}><Icon name="X" size={18} /></button>
+                                    </div>
+                                    <div className="flex-1 overflow-y-auto p-6 space-y-4 custom-scrollbar">
+                                        {chatHistory.map((msg, i) => (
+                                            <div key={i} className={`flex ${msg.role === 'user' ? 'justify-end' : 'justify-start'}`}>
+                                                <div className={`max-w-[85%] p-4 rounded-3xl text-[13px] ${msg.role === 'user' ? 'bg-indigo-600 text-white rounded-tr-none' : 'bg-white/5 text-zinc-300 rounded-tl-none'}`}>{msg.text}</div>
+                                            </div>
+                                        ))}
+                                        {isTyping && <div className="flex justify-start"><div className="bg-white/5 p-4 rounded-3xl"><Icon name="Loader2" className="animate-spin text-indigo-400" /></div></div>}
+                                        <div ref={chatEndRef} />
+                                    </div>
+                                    <form onSubmit={handleChatSubmit} className="p-6 bg-black/40 border-t border-white/10 flex space-x-3">
+                                        <input type="text" value={chatInput} onChange={e => setChatInput(e.target.value)} placeholder="Ask anything..." className="flex-1 bg-white/5 border border-white/10 rounded-2xl px-5 py-3 text-sm focus:outline-none focus:border-indigo-500 text-white" />
+                                        <button type="submit" className="w-12 h-12 bg-indigo-600 rounded-2xl flex items-center justify-center hover:bg-indigo-500 transition-colors"><Icon name="Send" size={18} /></button>
+                                    </form>
+                                </motion.div>
+                            )}
+                        </AnimatePresence>
+                        <Magnetic><button onClick={() => setIsChatOpen(!isChatOpen)} className="w-16 h-16 bg-white text-black rounded-3xl flex items-center justify-center shadow-2xl hover:scale-110 transition-transform"><Icon name="Sparkles" size={28} /></button></Magnetic>
+                    </div>
+                </div>
+            );
+        };
+
+        const root = ReactDOM.createRoot(document.getElementById('root'));
+        root.render(<App />);
+    </script>
+</body>
+</html>
