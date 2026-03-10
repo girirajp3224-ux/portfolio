@@ -22,6 +22,7 @@
             font-family: 'Inter', sans-serif;
             margin: 0;
             overflow-x: hidden;
+            -webkit-tap-highlight-color: transparent;
         }
 
         ::-webkit-scrollbar {
@@ -52,6 +53,11 @@
             align-items: center;
             justify-content: center;
         }
+
+        /* Responsive typography helpers */
+        .fluid-title {
+            font-size: clamp(3rem, 15vw, 11rem);
+        }
     </style>
 
     <script>
@@ -60,6 +66,9 @@
                 extend: {
                     animation: {
                         'pulse-slow': 'pulse 4s cubic-bezier(0.4, 0, 0.6, 1) infinite',
+                    },
+                    screens: {
+                        'xs': '400px',
                     }
                 }
             }
@@ -186,24 +195,24 @@
                     className={`relative group h-full ${project.span || 'col-span-1'}`}
                 >
                     <SpotlightCard className="h-full">
-                        <div style={{ transform: "translateZ(50px)" }} className="relative h-full flex flex-col p-8 space-y-6">
+                        <div style={{ transform: "translateZ(30px)" }} className="relative h-full flex flex-col p-6 md:p-8 space-y-6">
                             <div className="flex justify-between items-start">
-                                <div className="p-4 rounded-2xl bg-indigo-500/10 border border-indigo-500/20 text-indigo-400">
-                                    <Icon name={project.iconName} />
+                                <div className="p-3 md:p-4 rounded-2xl bg-indigo-500/10 border border-indigo-500/20 text-indigo-400">
+                                    <Icon name={project.iconName} size={20} />
                                 </div>
-                                <span className="text-[10px] uppercase tracking-[0.2em] font-bold text-zinc-500 border border-zinc-800 px-3 py-1 rounded-full">{project.category}</span>
+                                <span className="text-[9px] md:text-[10px] uppercase tracking-[0.2em] font-bold text-zinc-500 border border-zinc-800 px-2 py-1 md:px-3 rounded-full">{project.category}</span>
                             </div>
                             <div>
-                                <h3 className="text-2xl font-bold text-white mb-2 group-hover:text-indigo-400 transition-colors">{project.title}</h3>
-                                <p className="text-zinc-400 text-sm leading-relaxed">{project.description}</p>
+                                <h3 className="text-xl md:text-2xl font-bold text-white mb-2 group-hover:text-indigo-400 transition-colors">{project.title}</h3>
+                                <p className="text-zinc-400 text-xs md:text-sm leading-relaxed">{project.description}</p>
                             </div>
-                            <div className="mt-auto pt-8 flex justify-between items-center">
+                            <div className="mt-auto pt-6 flex justify-between items-center">
                                 <div className="flex -space-x-3">
                                     {project.tech.map((t, i) => (
-                                        <div key={i} className="w-10 h-10 rounded-full bg-zinc-800 border-2 border-zinc-900 flex items-center justify-center text-[10px] text-zinc-300 font-bold hover:z-10 hover:-translate-y-1 transition-all">{t[0]}</div>
+                                        <div key={i} className="w-8 h-8 md:w-10 md:h-10 rounded-full bg-zinc-800 border-2 border-zinc-900 flex items-center justify-center text-[9px] md:text-[10px] text-zinc-300 font-bold hover:z-10 hover:-translate-y-1 transition-all">{t[0]}</div>
                                     ))}
                                 </div>
-                                <motion.a href={project.link} target="_blank" whileHover={{ scale: 1.2, rotate: 45 }} className="w-12 h-12 rounded-xl bg-white text-black flex items-center justify-center shadow-lg"><Icon name="ArrowUpRight" size={20} /></motion.a>
+                                <motion.a href={project.link} target="_blank" whileHover={{ scale: 1.1, rotate: 45 }} className="w-10 h-10 md:w-12 md:h-12 rounded-xl bg-white text-black flex items-center justify-center shadow-lg"><Icon name="ArrowUpRight" size={18} /></motion.a>
                             </div>
                         </div>
                     </SpotlightCard>
@@ -215,6 +224,9 @@
             const ref = useRef(null);
             const [pos, setPos] = useState({ x: 0, y: 0 });
             const handleMouse = (e) => {
+                // Disable magnetic effect on touch screens for better mobile UX
+                if (window.matchMedia("(pointer: coarse)").matches) return;
+                
                 const { clientX, clientY } = e;
                 const { width, height, left, top } = ref.current.getBoundingClientRect();
                 setPos({ x: (clientX - (left + width / 2)) * 0.35, y: (clientY - (top + height / 2)) * 0.35 });
@@ -273,8 +285,8 @@
             return (
                 <div className="relative">
                     <div className="fixed inset-0 -z-10 bg-black overflow-hidden">
-                        <div className="absolute top-[10%] left-[20%] w-[500px] h-[500px] bg-indigo-600/10 blur-[150px] rounded-full animate-pulse-slow" />
-                        <div className="absolute bottom-[10%] right-[20%] w-[600px] h-[600px] bg-purple-600/10 blur-[150px] rounded-full" />
+                        <div className="absolute top-[10%] left-[20%] w-[50vw] h-[50vw] max-w-[500px] bg-indigo-600/10 blur-[100px] md:blur-[150px] rounded-full animate-pulse-slow" />
+                        <div className="absolute bottom-[10%] right-[20%] w-[60vw] h-[60vw] max-w-[600px] bg-purple-600/10 blur-[100px] md:blur-[150px] rounded-full" />
                     </div>
 
                     <motion.div 
@@ -289,94 +301,117 @@
                         <div className="w-1 h-1 bg-white rounded-full" />
                     </motion.div>
 
-                    <nav className="fixed top-8 left-1/2 -translate-x-1/2 z-[100] flex items-center px-10 py-5 rounded-3xl bg-zinc-900/60 border border-white/10 backdrop-blur-3xl shadow-2xl">
-                        <div className="flex space-x-12 text-[10px] font-black uppercase tracking-[0.4em]">
+                    <nav className="fixed top-4 md:top-8 left-1/2 -translate-x-1/2 z-[100] flex items-center px-6 md:px-10 py-3 md:py-5 rounded-full md:rounded-3xl bg-zinc-900/60 border border-white/10 backdrop-blur-3xl shadow-2xl w-[90vw] md:w-auto">
+                        <div className="flex justify-between md:space-x-12 w-full text-[9px] md:text-[10px] font-black uppercase tracking-[0.2em] md:tracking-[0.4em]">
                             {['Home', 'Work', 'About', 'Contact'].map(item => (
-                                <button key={item} onClick={() => scrollToSection(item.toLowerCase())} className="text-zinc-500 hover:text-white transition-colors relative group">{item}<span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-indigo-500 transition-all group-hover:w-full" /></button>
+                                <button key={item} onClick={() => scrollToSection(item.toLowerCase())} className="text-zinc-500 hover:text-white transition-colors relative group px-2 py-1 md:p-0">
+                                    {item}
+                                    <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-indigo-500 transition-all group-hover:w-full" />
+                                </button>
                             ))}
                         </div>
                     </nav>
 
-                    <section id="home" className="h-screen flex flex-col items-center justify-center px-6 text-center">
-                        <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="mb-8 inline-flex items-center space-x-3 px-6 py-3 rounded-full border border-indigo-500/20 bg-indigo-500/5 text-indigo-400 text-[10px] font-black tracking-widest uppercase"><Icon name="Code" size={14} /><span>Visual & Product Designer</span></motion.div>
-                        <motion.h1 initial={{ y: 100, opacity: 0 }} animate={{ y: 0, opacity: 1 }} transition={{ duration: 1 }} className="text-7xl md:text-9xl font-black tracking-tighter leading-none bg-clip-text text-transparent bg-gradient-to-b from-white to-zinc-700">GIRIRAJ <br /> MELINKERI</motion.h1>
-                        <motion.p initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.5 }} className="max-w-xl mx-auto text-zinc-400 text-lg md:text-xl font-medium mt-10 mb-12">Crafting high-fidelity visual narratives and product experiences.</motion.p>
+                    <section id="home" className="min-h-screen flex flex-col items-center justify-center px-6 text-center pt-20">
+                        <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="mb-6 md:mb-8 inline-flex items-center space-x-3 px-4 md:px-6 py-2 md:py-3 rounded-full border border-indigo-500/20 bg-indigo-500/5 text-indigo-400 text-[8px] md:text-[10px] font-black tracking-widest uppercase shadow-inner">
+                            <Icon name="Code" size={12} className="md:size-14" />
+                            <span>Visual & Product Designer</span>
+                        </motion.div>
+                        <motion.h1 initial={{ y: 50, opacity: 0 }} animate={{ y: 0, opacity: 1 }} transition={{ duration: 1 }} className="fluid-title font-black tracking-tighter leading-none bg-clip-text text-transparent bg-gradient-to-b from-white to-zinc-700">
+                            GIRIRAJ <br /> MELINKERI
+                        </motion.h1>
+                        <motion.p initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.5 }} className="max-w-xl mx-auto text-zinc-400 text-base md:text-xl font-medium mt-6 md:mt-10 mb-10 md:mb-12">
+                            Crafting high-fidelity visual narratives and product experiences.
+                        </motion.p>
                         
-                        <div className="flex flex-col items-center gap-8">
-                            <Magnetic><button onClick={() => scrollToSection('work')} className="px-12 py-6 bg-white text-black rounded-[2rem] font-black text-sm uppercase tracking-[0.2em] flex items-center space-x-4 group shadow-2xl hover:bg-indigo-50"><span>Explore Projects</span><Icon name="MousePointer2" size={20} /></button></Magnetic>
+                        <div className="flex flex-col items-center gap-8 md:gap-10">
+                            <Magnetic>
+                                <button onClick={() => scrollToSection('work')} className="px-10 md:px-12 py-5 md:py-6 bg-white text-black rounded-[2rem] font-black text-xs md:text-sm uppercase tracking-[0.2em] flex items-center space-x-4 group shadow-2xl hover:bg-indigo-50 transition-all active:scale-95">
+                                    <span>Explore Projects</span>
+                                    <Icon name="MousePointer2" size={18} className="md:size-20" />
+                                </button>
+                            </Magnetic>
                             
-                            <div className="flex gap-6 mt-4">
-                                <Magnetic><a href="tel:8296263224" className="w-12 h-12 rounded-xl border border-white/10 flex items-center justify-center hover:bg-white/5 transition-colors text-zinc-400 hover:text-white"><Icon name="Phone" size={20} /></a></Magnetic>
-                                <Magnetic><a href="mailto:girirajp3224@gmail.com" className="w-12 h-12 rounded-xl border border-white/10 flex items-center justify-center hover:bg-white/5 transition-colors text-zinc-400 hover:text-white"><Icon name="Mail" size={20} /></a></Magnetic>
-                                <Magnetic><a href={INSTAGRAM_URL} target="_blank" className="w-12 h-12 rounded-xl border border-white/10 flex items-center justify-center hover:bg-white/5 transition-colors text-zinc-400 hover:text-white"><Icon name="Instagram" size={20} /></a></Magnetic>
+                            <div className="flex gap-4 md:gap-6">
+                                <Magnetic><a href="tel:8296263224" className="w-10 h-10 md:w-12 md:h-12 rounded-xl border border-white/10 flex items-center justify-center hover:bg-white/5 transition-colors text-zinc-400 hover:text-white"><Icon name="Phone" size={18} /></a></Magnetic>
+                                <Magnetic><a href="mailto:girirajp3224@gmail.com" className="w-10 h-10 md:w-12 md:h-12 rounded-xl border border-white/10 flex items-center justify-center hover:bg-white/5 transition-colors text-zinc-400 hover:text-white"><Icon name="Mail" size={18} /></a></Magnetic>
+                                <Magnetic><a href={INSTAGRAM_URL} target="_blank" className="w-10 h-10 md:w-12 md:h-12 rounded-xl border border-white/10 flex items-center justify-center hover:bg-white/5 transition-colors text-zinc-400 hover:text-white"><Icon name="Instagram" size={18} /></a></Magnetic>
                             </div>
                         </div>
                     </section>
 
-                    <section id="work" className="py-32 px-6 max-w-7xl mx-auto scroll-mt-24">
-                        <div className="flex flex-col md:flex-row justify-between items-end mb-28 gap-12">
+                    <section id="work" className="py-20 md:py-32 px-6 max-w-7xl mx-auto scroll-mt-20 md:scroll-mt-24">
+                        <div className="flex flex-col lg:flex-row justify-between items-center lg:items-end mb-16 md:mb-28 gap-8 lg:gap-12 text-center lg:text-left">
                             <div>
-                                <h2 className="text-6xl md:text-8xl font-black tracking-tighter uppercase leading-none">Portfolio</h2>
-                                <p className="text-zinc-500 font-black uppercase tracking-[0.3em] text-[10px] mt-4">Selected Behance Work</p>
+                                <h2 className="text-5xl md:text-8xl font-black tracking-tighter uppercase leading-none">Portfolio</h2>
+                                <p className="text-zinc-500 font-black uppercase tracking-[0.2em] text-[8px] md:text-[10px] mt-4">Selected Behance Work</p>
                             </div>
-                            <div className="flex gap-4">
+                            <div className="flex flex-wrap justify-center gap-2 md:gap-4">
                                 {['All', 'Visual', 'Product'].map(cat => (
-                                    <button key={cat} onClick={() => setActiveTab(cat)} className={`px-10 py-4 rounded-2xl text-[10px] font-black uppercase tracking-widest border transition-all ${activeTab === cat ? "bg-white text-black border-white shadow-[0_0_20px_rgba(255,255,255,0.1)]" : "bg-transparent text-zinc-600 border-white/5 hover:border-white/20"}`}>{cat}</button>
+                                    <button key={cat} onClick={() => setActiveTab(cat)} className={`px-6 md:px-10 py-3 md:py-4 rounded-2xl text-[8px] md:text-[10px] font-black uppercase tracking-widest border transition-all ${activeTab === cat ? "bg-white text-black border-white shadow-[0_0_20px_rgba(255,255,255,0.1)]" : "bg-transparent text-zinc-600 border-white/5 hover:border-white/20"}`}>{cat}</button>
                                 ))}
                             </div>
                         </div>
-                        <div className="grid grid-cols-1 md:grid-cols-3 gap-10">
+                        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-10">
                             <AnimatePresence mode="popLayout">
                                 {filteredProjects.map((p, i) => <TiltCard key={p.title} project={p} index={i} />)}
                             </AnimatePresence>
                         </div>
                     </section>
 
-                    <section id="about" className="py-32 px-6 max-w-7xl mx-auto scroll-mt-24">
-                        <div className="grid grid-cols-1 lg:grid-cols-2 gap-24 items-center">
-                            <div className="space-y-10">
-                                <h2 className="text-6xl md:text-8xl font-black tracking-tighter uppercase leading-none">Creative <br /> <span className="text-zinc-700">Expertise</span></h2>
-                                <p className="text-xl text-zinc-400 leading-relaxed font-medium">Bridging the gap between conceptual art and product utility. Specialized in high-fidelity visual design and high-impact brand identity systems.</p>
-                                <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-                                    <SpotlightCard className="p-8"><Icon name="Zap" className="text-indigo-400 mb-6" /><div className="text-3xl font-black">5+ Years</div><div className="text-[10px] uppercase tracking-[0.3em] text-zinc-600 font-bold">Experience</div></SpotlightCard>
-                                    <SpotlightCard className="p-8"><Icon name="Terminal" className="text-indigo-400 mb-6" /><div className="text-3xl font-black">10+</div><div className="text-[10px] uppercase tracking-[0.3em] text-zinc-600 font-bold">Global Projects</div></SpotlightCard>
+                    <section id="about" className="py-20 md:py-32 px-6 max-w-7xl mx-auto scroll-mt-20 md:scroll-mt-24">
+                        <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 md:gap-24 items-center">
+                            <div className="space-y-8 md:space-y-10">
+                                <h2 className="text-5xl md:text-8xl font-black tracking-tighter uppercase leading-none">Creative <br /> <span className="text-zinc-700">Expertise</span></h2>
+                                <p className="text-lg md:text-xl text-zinc-400 leading-relaxed font-medium">Bridging the gap between conceptual art and product utility. Specialized in high-fidelity visual design and high-impact brand identity systems.</p>
+                                <div className="grid grid-cols-1 xs:grid-cols-2 gap-6 md:gap-8">
+                                    <SpotlightCard className="p-6 md:p-8">
+                                        <Icon name="Zap" className="text-indigo-400 mb-4 md:mb-6" size={24} />
+                                        <div className="text-2xl md:text-3xl font-black">5+ Years</div>
+                                        <div className="text-[9px] md:text-[10px] uppercase tracking-[0.3em] text-zinc-600 font-bold">Experience</div>
+                                    </SpotlightCard>
+                                    <SpotlightCard className="p-6 md:p-8">
+                                        <Icon name="Terminal" className="text-indigo-400 mb-4 md:mb-6" size={24} />
+                                        <div className="text-2xl md:text-3xl font-black">10+</div>
+                                        <div className="text-[9px] md:text-[10px] uppercase tracking-[0.3em] text-zinc-600 font-bold">Global Projects</div>
+                                    </SpotlightCard>
                                 </div>
                             </div>
-                            <div className="grid grid-cols-2 gap-6 p-2">
+                            <div className="grid grid-cols-2 gap-4 md:gap-6 p-2">
                                 {['Photoshop', 'InDesign', 'CorelDraw', 'Figma', 'Illustrator', 'Canva'].map((tool, i) => (
-                                    <motion.div key={tool} initial={{ opacity: 0 }} whileInView={{ opacity: 1 }} transition={{ delay: i * 0.1 }} className="p-8 rounded-[2rem] border border-white/5 bg-zinc-900/40 text-center hover:bg-white/5 transition-colors cursor-default">
-                                        <span className="font-black tracking-widest text-[10px] uppercase text-zinc-400">{tool}</span>
+                                    <motion.div key={tool} initial={{ opacity: 0 }} whileInView={{ opacity: 1 }} transition={{ delay: i * 0.1 }} className="p-6 md:p-8 rounded-[1.5rem] md:rounded-[2rem] border border-white/5 bg-zinc-900/40 text-center hover:bg-white/5 transition-colors cursor-default">
+                                        <span className="font-black tracking-widest text-[8px] md:text-[10px] uppercase text-zinc-400">{tool}</span>
                                     </motion.div>
                                 ))}
                             </div>
                         </div>
                     </section>
 
-                    <section id="contact" className="py-40 px-6 scroll-mt-24">
-                        <div className="max-w-6xl mx-auto rounded-[4rem] border border-white/5 bg-zinc-900/40 backdrop-blur-3xl p-16 md:p-32 text-center relative overflow-hidden shadow-2xl">
+                    <section id="contact" className="py-20 md:py-40 px-4 md:px-6 scroll-mt-20 md:scroll-mt-24">
+                        <div className="max-w-6xl mx-auto rounded-[3rem] md:rounded-[4rem] border border-white/5 bg-zinc-900/40 backdrop-blur-3xl p-10 md:p-32 text-center relative overflow-hidden shadow-2xl">
                             <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-transparent via-indigo-500 to-transparent" />
-                            <h2 className="text-7xl md:text-9xl font-black tracking-tighter mb-12 uppercase leading-none">Let's <br /><span className="text-indigo-500">Connect</span></h2>
+                            <h2 className="text-5xl md:text-9xl font-black tracking-tighter mb-8 md:mb-12 uppercase leading-none">Let's <br /><span className="text-indigo-500">Connect</span></h2>
                             
-                            <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mt-12">
+                            <div className="grid grid-cols-1 md:grid-cols-3 gap-6 md:gap-8 mt-10 md:mt-12">
                                 <Magnetic>
-                                    <a href="tel:8296263224" className="flex flex-col items-center p-8 rounded-[2.5rem] bg-white/5 border border-white/10 hover:bg-white/10 transition-all group">
-                                        <Icon name="Phone" className="text-indigo-400 mb-4 group-hover:scale-110 transition-transform" size={32} />
-                                        <span className="text-xs font-black uppercase tracking-[0.2em] text-zinc-500 mb-2">Call Me</span>
-                                        <span className="text-lg font-bold">8296263224</span>
+                                    <a href="tel:8296263224" className="flex flex-col items-center p-6 md:p-8 rounded-[2rem] md:rounded-[2.5rem] bg-white/5 border border-white/10 hover:bg-white/10 transition-all group">
+                                        <Icon name="Phone" className="text-indigo-400 mb-3 md:mb-4 group-hover:scale-110 transition-transform" size={24} md:size={32} />
+                                        <span className="text-[9px] font-black uppercase tracking-[0.2em] text-zinc-500 mb-1">Call Me</span>
+                                        <span className="text-sm md:text-lg font-bold">8296263224</span>
                                     </a>
                                 </Magnetic>
                                 <Magnetic>
-                                    <a href="mailto:girirajp3224@gmail.com" className="flex flex-col items-center p-8 rounded-[2.5rem] bg-white/5 border border-white/10 hover:bg-white/10 transition-all group">
-                                        <Icon name="Mail" className="text-indigo-400 mb-4 group-hover:scale-110 transition-transform" size={32} />
-                                        <span className="text-xs font-black uppercase tracking-[0.2em] text-zinc-500 mb-2">Gmail</span>
-                                        <span className="text-lg font-bold">girirajp3224@gmail.com</span>
+                                    <a href="mailto:girirajp3224@gmail.com" className="flex flex-col items-center p-6 md:p-8 rounded-[2rem] md:rounded-[2.5rem] bg-white/5 border border-white/10 hover:bg-white/10 transition-all group">
+                                        <Icon name="Mail" className="text-indigo-400 mb-3 md:mb-4 group-hover:scale-110 transition-transform" size={24} md:size={32} />
+                                        <span className="text-[9px] font-black uppercase tracking-[0.2em] text-zinc-500 mb-1">Gmail</span>
+                                        <span className="text-xs sm:text-sm md:text-lg font-bold break-all">girirajp3224@gmail.com</span>
                                     </a>
                                 </Magnetic>
                                 <Magnetic>
-                                    <a href={INSTAGRAM_URL} target="_blank" className="flex flex-col items-center p-8 rounded-[2.5rem] bg-white/5 border border-white/10 hover:bg-white/10 transition-all group">
-                                        <Icon name="Instagram" className="text-indigo-400 mb-4 group-hover:scale-110 transition-transform" size={32} />
-                                        <span className="text-xs font-black uppercase tracking-[0.2em] text-zinc-500 mb-2">Instagram</span>
-                                        <span className="text-lg font-bold">thedesignhive1</span>
+                                    <a href={INSTAGRAM_URL} target="_blank" className="flex flex-col items-center p-6 md:p-8 rounded-[2rem] md:rounded-[2.5rem] bg-white/5 border border-white/10 hover:bg-white/10 transition-all group">
+                                        <Icon name="Instagram" className="text-indigo-400 mb-3 md:mb-4 group-hover:scale-110 transition-transform" size={24} md:size={32} />
+                                        <span className="text-[9px] font-black uppercase tracking-[0.2em] text-zinc-500 mb-1">Instagram</span>
+                                        <span className="text-sm md:text-lg font-bold">thedesignhive1</span>
                                     </a>
                                 </Magnetic>
                             </div>
@@ -384,31 +419,44 @@
                     </section>
 
                     {/* AI Chat Bot */}
-                    <div className="fixed bottom-8 right-8 z-[1000]">
+                    <div className="fixed bottom-4 right-4 md:bottom-8 md:right-8 z-[1000]">
                         <AnimatePresence>
                             {isChatOpen && (
-                                <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: 20 }} className="absolute bottom-24 right-0 w-[340px] md:w-96 h-[550px] bg-zinc-900/95 border border-white/10 rounded-[2.5rem] flex flex-col shadow-2xl overflow-hidden backdrop-blur-3xl">
-                                    <div className="p-6 border-b border-white/10 flex justify-between items-center bg-gradient-to-r from-indigo-600/20 to-purple-600/20">
-                                        <div className="flex items-center space-x-3"><Icon name="Sparkles" className="text-indigo-400" /><span className="text-xs font-black uppercase tracking-widest">AI Assistant</span></div>
+                                <motion.div 
+                                    initial={{ opacity: 0, scale: 0.9, y: 20 }} 
+                                    animate={{ opacity: 1, scale: 1, y: 0 }} 
+                                    exit={{ opacity: 0, scale: 0.9, y: 20 }} 
+                                    className="absolute bottom-20 right-0 w-[calc(100vw-2rem)] md:w-96 h-[500px] md:h-[550px] bg-zinc-900/95 border border-white/10 rounded-[2.5rem] flex flex-col shadow-2xl overflow-hidden backdrop-blur-3xl"
+                                >
+                                    <div className="p-5 md:p-6 border-b border-white/10 flex justify-between items-center bg-gradient-to-r from-indigo-600/20 to-purple-600/20">
+                                        <div className="flex items-center space-x-3"><Icon name="Sparkles" className="text-indigo-400" size={16} /><span className="text-[10px] md:text-xs font-black uppercase tracking-widest">AI Assistant</span></div>
                                         <button onClick={() => setIsChatOpen(false)} className="text-zinc-500 hover:text-white transition-colors"><Icon name="X" size={18} /></button>
                                     </div>
-                                    <div className="flex-1 overflow-y-auto p-6 space-y-4 custom-scrollbar">
+                                    <div className="flex-1 overflow-y-auto p-5 md:p-6 space-y-4 custom-scrollbar">
                                         {chatHistory.map((msg, i) => (
                                             <div key={i} className={`flex ${msg.role === 'user' ? 'justify-end' : 'justify-start'}`}>
-                                                <div className={`max-w-[85%] p-4 rounded-3xl text-[13px] leading-relaxed ${msg.role === 'user' ? 'bg-indigo-600 text-white rounded-tr-none' : 'bg-white/5 border border-white/10 text-zinc-300 rounded-tl-none'}`}>{msg.text}</div>
+                                                <div className={`max-w-[85%] p-3 md:p-4 rounded-3xl text-xs md:text-[13px] leading-relaxed ${msg.role === 'user' ? 'bg-indigo-600 text-white rounded-tr-none' : 'bg-white/5 border border-white/10 text-zinc-300 rounded-tl-none'}`}>{msg.text}</div>
                                             </div>
                                         ))}
-                                        {isTyping && <div className="flex justify-start"><div className="bg-white/5 p-4 rounded-3xl border border-white/10"><Icon name="Loader2" className="animate-spin text-indigo-400" /></div></div>}
+                                        {isTyping && <div className="flex justify-start"><div className="bg-white/5 p-4 rounded-3xl border border-white/10"><Icon name="Loader2" className="animate-spin text-indigo-400" size={16} /></div></div>}
                                         <div ref={chatEndRef} />
                                     </div>
-                                    <form onSubmit={handleChatSubmit} className="p-6 bg-black/40 border-t border-white/10 flex space-x-3">
-                                        <input type="text" value={chatInput} onChange={e => setChatInput(e.target.value)} placeholder="Ask about Giriraj..." className="flex-1 bg-white/5 border border-white/10 rounded-2xl px-5 py-3 text-sm focus:outline-none focus:border-indigo-500 text-white transition-colors" />
-                                        <button type="submit" className="w-12 h-12 bg-indigo-600 rounded-2xl flex items-center justify-center hover:bg-indigo-500 transition-all hover:scale-105 active:scale-95 shadow-lg shadow-indigo-600/30"><Icon name="Send" size={18} /></button>
+                                    <form onSubmit={handleChatSubmit} className="p-4 md:p-6 bg-black/40 border-t border-white/10 flex space-x-3">
+                                        <input type="text" value={chatInput} onChange={e => setChatInput(e.target.value)} placeholder="Ask about Giriraj..." className="flex-1 bg-white/5 border border-white/10 rounded-2xl px-4 md:px-5 py-2 md:py-3 text-[13px] focus:outline-none focus:border-indigo-500 text-white transition-colors" />
+                                        <button type="submit" className="w-10 h-10 md:w-12 md:h-12 bg-indigo-600 rounded-2xl flex items-center justify-center hover:bg-indigo-500 transition-all hover:scale-105 active:scale-95 shadow-lg shadow-indigo-600/30 flex-shrink-0"><Icon name="Send" size={16} md:size={18} /></button>
                                     </form>
                                 </motion.div>
                             )}
                         </AnimatePresence>
-                        <Magnetic><button onClick={() => setIsChatOpen(!isChatOpen)} className="w-18 h-18 bg-white text-black rounded-[1.8rem] flex items-center justify-center shadow-2xl hover:scale-110 transition-all relative overflow-hidden group"><Icon name="Sparkles" size={28} className="group-hover:rotate-12 transition-transform" /><motion.div animate={{ rotate: 360 }} transition={{ repeat: Infinity, duration: 8, ease: "linear" }} className="absolute inset-0 border-2 border-dashed border-indigo-500/20 rounded-[1.8rem]" /></button></Magnetic>
+                        <Magnetic>
+                            <button 
+                                onClick={() => setIsChatOpen(!isChatOpen)} 
+                                className="w-14 h-14 md:w-18 md:h-18 bg-white text-black rounded-[1.5rem] md:rounded-[1.8rem] flex items-center justify-center shadow-2xl hover:scale-110 transition-all relative overflow-hidden group active:scale-95"
+                            >
+                                <Icon name="Sparkles" size={24} md:size={28} className="group-hover:rotate-12 transition-transform" />
+                                <motion.div animate={{ rotate: 360 }} transition={{ repeat: Infinity, duration: 8, ease: "linear" }} className="absolute inset-0 border-2 border-dashed border-indigo-500/20 rounded-[1.5rem] md:rounded-[1.8rem]" />
+                            </button>
+                        </Magnetic>
                     </div>
                 </div>
             );
