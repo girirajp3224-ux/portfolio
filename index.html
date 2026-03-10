@@ -83,6 +83,7 @@
 
         const apiKey = "AIzaSyBNMIrGE54jthXNnpUzN0rcoK7ixQTV4Ig";
         const GEMINI_MODEL = "gemini-2.5-flash-preview-09-2025";
+        const INSTAGRAM_URL = "https://www.instagram.com/the_design_hive1?igsh=MWF4c2llZGo2b2lo&utm_source=qr";
 
         // Gemini API Logic
         const callGemini = async (prompt, retries = 0) => {
@@ -90,7 +91,7 @@
             const payload = {
                 contents: [{ parts: [{ text: prompt }] }],
                 systemInstruction: { 
-                    parts: [{ text: "You are the AI assistant for Giriraj Melinkeri, a high-end Visual and Product Designer. Answer questions about his portfolio and design style. His contact info: Phone: 8296263224, Gmail: girirajp3224@gmail.com, Instagram: thedesignhive1. Be professional, creative, and concise." }] 
+                    parts: [{ text: `You are the AI assistant for Giriraj Melinkeri, a high-end Visual and Product Designer. Answer questions about his portfolio and design style. His contact info: Phone: 8296263224, Gmail: girirajp3224@gmail.com, Instagram: ${INSTAGRAM_URL}. Be professional, creative, and concise.` }] 
                 }
             };
 
@@ -307,7 +308,7 @@
                             <div className="flex gap-6 mt-4">
                                 <Magnetic><a href="tel:8296263224" className="w-12 h-12 rounded-xl border border-white/10 flex items-center justify-center hover:bg-white/5 transition-colors text-zinc-400 hover:text-white"><Icon name="Phone" size={20} /></a></Magnetic>
                                 <Magnetic><a href="mailto:girirajp3224@gmail.com" className="w-12 h-12 rounded-xl border border-white/10 flex items-center justify-center hover:bg-white/5 transition-colors text-zinc-400 hover:text-white"><Icon name="Mail" size={20} /></a></Magnetic>
-                                <Magnetic><a href="https://instagram.com/thedesignhive1" target="_blank" className="w-12 h-12 rounded-xl border border-white/10 flex items-center justify-center hover:bg-white/5 transition-colors text-zinc-400 hover:text-white"><Icon name="Instagram" size={20} /></a></Magnetic>
+                                <Magnetic><a href={INSTAGRAM_URL} target="_blank" className="w-12 h-12 rounded-xl border border-white/10 flex items-center justify-center hover:bg-white/5 transition-colors text-zinc-400 hover:text-white"><Icon name="Instagram" size={20} /></a></Magnetic>
                             </div>
                         </div>
                     </section>
@@ -372,7 +373,7 @@
                                     </a>
                                 </Magnetic>
                                 <Magnetic>
-                                    <a href="https://instagram.com/thedesignhive1" target="_blank" className="flex flex-col items-center p-8 rounded-[2.5rem] bg-white/5 border border-white/10 hover:bg-white/10 transition-all group">
+                                    <a href={INSTAGRAM_URL} target="_blank" className="flex flex-col items-center p-8 rounded-[2.5rem] bg-white/5 border border-white/10 hover:bg-white/10 transition-all group">
                                         <Icon name="Instagram" className="text-indigo-400 mb-4 group-hover:scale-110 transition-transform" size={32} />
                                         <span className="text-xs font-black uppercase tracking-[0.2em] text-zinc-500 mb-2">Instagram</span>
                                         <span className="text-lg font-bold">thedesignhive1</span>
