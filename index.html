@@ -314,7 +314,7 @@
 
                     <section id="home" className="min-h-screen flex flex-col items-center justify-center px-6 text-center pt-20">
                         <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="mb-6 md:mb-8 inline-flex items-center space-x-3 px-4 md:px-6 py-2 md:py-3 rounded-full border border-indigo-500/20 bg-indigo-500/5 text-indigo-400 text-[8px] md:text-[10px] font-black tracking-widest uppercase shadow-inner">
-                            <Icon name="Code" size={12} className="md:size-14" />
+                            <Icon name="Code" size={12} />
                             <span>Visual & Product Designer</span>
                         </motion.div>
                         <motion.h1 initial={{ y: 50, opacity: 0 }} animate={{ y: 0, opacity: 1 }} transition={{ duration: 1 }} className="fluid-title font-black tracking-tighter leading-none bg-clip-text text-transparent bg-gradient-to-b from-white to-zinc-700">
@@ -328,7 +328,7 @@
                             <Magnetic>
                                 <button onClick={() => scrollToSection('work')} className="px-10 md:px-12 py-5 md:py-6 bg-white text-black rounded-[2rem] font-black text-xs md:text-sm uppercase tracking-[0.2em] flex items-center space-x-4 group shadow-2xl hover:bg-indigo-50 transition-all active:scale-95">
                                     <span>Explore Projects</span>
-                                    <Icon name="MousePointer2" size={18} className="md:size-20" />
+                                    <Icon name="MousePointer2" size={18} />
                                 </button>
                             </Magnetic>
                             
@@ -395,21 +395,21 @@
                             <div className="grid grid-cols-1 md:grid-cols-3 gap-6 md:gap-8 mt-10 md:mt-12">
                                 <Magnetic>
                                     <a href="tel:8296263224" className="flex flex-col items-center p-6 md:p-8 rounded-[2rem] md:rounded-[2.5rem] bg-white/5 border border-white/10 hover:bg-white/10 transition-all group">
-                                        <Icon name="Phone" className="text-indigo-400 mb-3 md:mb-4 group-hover:scale-110 transition-transform" size={24} md:size={32} />
+                                        <Icon name="Phone" className="text-indigo-400 mb-3 md:mb-4 group-hover:scale-110 transition-transform" size={28} />
                                         <span className="text-[9px] font-black uppercase tracking-[0.2em] text-zinc-500 mb-1">Call Me</span>
                                         <span className="text-sm md:text-lg font-bold">8296263224</span>
                                     </a>
                                 </Magnetic>
                                 <Magnetic>
                                     <a href="mailto:girirajp3224@gmail.com" className="flex flex-col items-center p-6 md:p-8 rounded-[2rem] md:rounded-[2.5rem] bg-white/5 border border-white/10 hover:bg-white/10 transition-all group">
-                                        <Icon name="Mail" className="text-indigo-400 mb-3 md:mb-4 group-hover:scale-110 transition-transform" size={24} md:size={32} />
+                                        <Icon name="Mail" className="text-indigo-400 mb-3 md:mb-4 group-hover:scale-110 transition-transform" size={28} />
                                         <span className="text-[9px] font-black uppercase tracking-[0.2em] text-zinc-500 mb-1">Gmail</span>
                                         <span className="text-xs sm:text-sm md:text-lg font-bold break-all">girirajp3224@gmail.com</span>
                                     </a>
                                 </Magnetic>
                                 <Magnetic>
                                     <a href={INSTAGRAM_URL} target="_blank" className="flex flex-col items-center p-6 md:p-8 rounded-[2rem] md:rounded-[2.5rem] bg-white/5 border border-white/10 hover:bg-white/10 transition-all group">
-                                        <Icon name="Instagram" className="text-indigo-400 mb-3 md:mb-4 group-hover:scale-110 transition-transform" size={24} md:size={32} />
+                                        <Icon name="Instagram" className="text-indigo-400 mb-3 md:mb-4 group-hover:scale-110 transition-transform" size={28} />
                                         <span className="text-[9px] font-black uppercase tracking-[0.2em] text-zinc-500 mb-1">Instagram</span>
                                         <span className="text-sm md:text-lg font-bold">thedesignhive1</span>
                                     </a>
@@ -443,7 +443,7 @@
                                     </div>
                                     <form onSubmit={handleChatSubmit} className="p-4 md:p-6 bg-black/40 border-t border-white/10 flex space-x-3">
                                         <input type="text" value={chatInput} onChange={e => setChatInput(e.target.value)} placeholder="Ask about Giriraj..." className="flex-1 bg-white/5 border border-white/10 rounded-2xl px-4 md:px-5 py-2 md:py-3 text-[13px] focus:outline-none focus:border-indigo-500 text-white transition-colors" />
-                                        <button type="submit" className="w-10 h-10 md:w-12 md:h-12 bg-indigo-600 rounded-2xl flex items-center justify-center hover:bg-indigo-500 transition-all hover:scale-105 active:scale-95 shadow-lg shadow-indigo-600/30 flex-shrink-0"><Icon name="Send" size={16} md:size={18} /></button>
+                                        <button type="submit" className="w-10 h-10 md:w-12 md:h-12 bg-indigo-600 rounded-2xl flex items-center justify-center hover:bg-indigo-500 transition-all hover:scale-105 active:scale-95 shadow-lg shadow-indigo-600/30 flex-shrink-0"><Icon name="Send" size={16} /></button>
                                     </form>
                                 </motion.div>
                             )}
@@ -453,7 +453,7 @@
                                 onClick={() => setIsChatOpen(!isChatOpen)} 
                                 className="w-14 h-14 md:w-18 md:h-18 bg-white text-black rounded-[1.5rem] md:rounded-[1.8rem] flex items-center justify-center shadow-2xl hover:scale-110 transition-all relative overflow-hidden group active:scale-95"
                             >
-                                <Icon name="Sparkles" size={24} md:size={28} className="group-hover:rotate-12 transition-transform" />
+                                <Icon name="Sparkles" size={24} className="group-hover:rotate-12 transition-transform" />
                                 <motion.div animate={{ rotate: 360 }} transition={{ repeat: Infinity, duration: 8, ease: "linear" }} className="absolute inset-0 border-2 border-dashed border-indigo-500/20 rounded-[1.5rem] md:rounded-[1.8rem]" />
                             </button>
                         </Magnetic>
