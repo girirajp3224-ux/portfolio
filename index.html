@@ -1,21 +1,29 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { motion, useScroll, useTransform, AnimatePresence, useSpring, useMotionValue } from 'framer-motion';
 import { 
-  LucideGithub, 
-  LucideLinkedin, 
-  LucideMail, 
-  LucideExternalLink, 
-  LucideLayout, 
-  LucideCpu, 
-  LucideLayers, 
-  LucideArrowUpRight,
-  LucideMousePointer2,
-  LucideGlobe,
-  LucideCode,
-  LucideTerminal,
-  LucideZap,
-  LucideBox,
-  LucidePalette
+  motion, 
+  useScroll, 
+  useTransform, 
+  AnimatePresence, 
+  useSpring, 
+  useMotionValue, 
+  useMotionTemplate 
+} from 'framer-motion';
+import { 
+  Github, 
+  Linkedin, 
+  Mail, 
+  ExternalLink, 
+  Layout, 
+  Cpu, 
+  Layers, 
+  ArrowUpRight, 
+  MousePointer2, 
+  Globe, 
+  Code, 
+  Terminal, 
+  Zap, 
+  Box, 
+  Palette 
 } from 'lucide-react';
 
 /**
@@ -47,6 +55,9 @@ const SpotlightCard = ({ children, className = "" }) => {
     mouseY.set(clientY - top);
   }
 
+  // Use useMotionTemplate to correctly handle dynamic styles
+  const background = useMotionTemplate`radial-gradient(650px circle at ${mouseX}px ${mouseY}px, rgba(99, 102, 241, 0.15), transparent 80%)`;
+
   return (
     <div
       onMouseMove={handleMouseMove}
@@ -54,11 +65,7 @@ const SpotlightCard = ({ children, className = "" }) => {
     >
       <motion.div
         className="pointer-events-none absolute -inset-px rounded-3xl opacity-0 transition duration-300 group-hover:opacity-100"
-        style={{
-          background: useMotionValue(
-            `radial-gradient(600px circle at ${mouseX}px ${mouseY}px, rgba(99, 102, 241, 0.15), transparent 80%)`
-          ),
-        }}
+        style={{ background }}
       />
       {children}
     </div>
@@ -121,7 +128,7 @@ const TiltCard = ({ project, index }) => {
               whileHover={{ scale: 1.2, rotate: 45 }} 
               className="w-12 h-12 rounded-xl bg-white text-black flex items-center justify-center cursor-pointer"
             >
-              <LucideArrowUpRight size={20} />
+              <ArrowUpRight size={20} />
             </motion.a>
           </div>
         </div>
@@ -183,7 +190,7 @@ export default function App() {
       title: "Tech Product Poster", 
       description: "A high-fidelity conceptual tech advertisement focused on sleek lighting and modern composition.", 
       category: "Visual", 
-      icon: <LucideLayers />, 
+      icon: <Layers />, 
       tech: ["Photoshop", "Cinema4D", "Figma"], 
       span: "md:col-span-2",
       link: "https://www.behance.net/gallery/242470621/Tech-Product-Poster"
@@ -192,7 +199,7 @@ export default function App() {
       title: "Hydra Clear Cleanser", 
       description: "Commercial product design and 3D visualization for daily skincare essentials.", 
       category: "Product", 
-      icon: <LucideBox />, 
+      icon: <Box />, 
       tech: ["Blender", "Octane", "Ps"], 
       span: "md:col-span-1",
       link: "https://www.behance.net/gallery/245542713/Hydra-Clear-Daily-Face-Cleanser-Face-Wash-Product"
@@ -201,7 +208,7 @@ export default function App() {
       title: "Zenvia Naturals", 
       description: "Visual identity and logo design for an organic-focused wellness brand.", 
       category: "Visual", 
-      icon: <LucidePalette />, 
+      icon: <Palette />, 
       tech: ["Illustrator", "AfterEffects"], 
       span: "md:col-span-1",
       link: "https://www.behance.net/gallery/245542351/Zenvia-Naturals-(-LOGO-DESIGN-)"
@@ -210,7 +217,7 @@ export default function App() {
       title: "Packaging Mockups", 
       description: "Comprehensive packaging design system including offer posters and commercial layouts.", 
       category: "Product", 
-      icon: <LucideBox />, 
+      icon: <Box />, 
       tech: ["Figma", "Photoshop", "Dimension"], 
       span: "md:col-span-2",
       link: "https://www.behance.net/gallery/245542049/Packaging-design-with-mockup-Offer-Poster"
@@ -219,7 +226,7 @@ export default function App() {
       title: "Design Board Mockup", 
       description: "Logo board presentation and high-resolution mockups for professional branding displays.", 
       category: "Visual", 
-      icon: <LucideLayers />, 
+      icon: <Layers />, 
       tech: ["Illustrator", "Framer"], 
       span: "md:col-span-1",
       link: "https://www.behance.net/gallery/245541313/Logo-Design-Board-Mockup"
@@ -228,7 +235,7 @@ export default function App() {
       title: "Red Glass Serum", 
       description: "Premium product mockup and social media campaign creative for high-end skincare.", 
       category: "Product", 
-      icon: <LucideBox />, 
+      icon: <Box />, 
       tech: ["Blender", "Ps", "Ae"], 
       span: "md:col-span-1",
       link: "https://www.behance.net/gallery/245540917/Red-Glass-Syrum-Product-Mockup-Social-Media-Poster"
@@ -268,7 +275,7 @@ export default function App() {
       <section id="home" className="relative h-screen flex flex-col items-center justify-center px-4">
         <div className="relative z-10 text-center">
           <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="mb-6 inline-flex items-center space-x-2 px-4 py-2 rounded-full border border-indigo-500/20 bg-indigo-500/5 text-indigo-400 text-[10px] font-bold tracking-widest uppercase">
-            <LucideCode size={14} /><span>Visual Designer & Product Strategist</span>
+            <Code size={14} /><span>Visual Designer & Product Strategist</span>
           </motion.div>
           <motion.h1 
             initial={{ y: 50, opacity: 0 }} animate={{ y: 0, opacity: 1 }}
@@ -286,7 +293,7 @@ export default function App() {
                 className="px-10 py-5 bg-white text-black rounded-2xl font-black text-sm uppercase tracking-widest flex items-center space-x-3 group"
               >
                 <span>Explore Projects</span>
-                <LucideMousePointer2 size={18} className="group-hover:translate-x-1 group-hover:-translate-y-1 transition-transform" />
+                <MousePointer2 size={18} className="group-hover:translate-x-1 group-hover:-translate-y-1 transition-transform" />
               </button>
             </Magnetic>
           </div>
@@ -330,8 +337,8 @@ export default function App() {
             </p>
             <div className="grid grid-cols-2 gap-6">
               {[
-                { label: "Experience", val: "5+ Years", icon: <LucideZap /> },
-                { label: "Behance Projects", val: "10+", icon: <LucideTerminal /> }
+                { label: "Experience", val: "5+ Years", icon: <Zap /> },
+                { label: "Behance Projects", val: "10+", icon: <Terminal /> }
               ].map(stat => (
                 <SpotlightCard key={stat.label} className="p-6">
                   <div className="text-indigo-400 mb-4">{stat.icon}</div>
@@ -371,10 +378,10 @@ export default function App() {
             <div className="flex space-x-6">
               <Magnetic>
                 <a href="https://www.behance.net/girirajmelinkri" target="_blank" className="w-14 h-14 rounded-2xl border border-white/10 flex items-center justify-center hover:bg-white/5 transition-colors cursor-pointer text-zinc-400 hover:text-white">
-                  <LucideExternalLink size={22} />
+                  <ExternalLink size={22} />
                 </a>
               </Magnetic>
-              {[LucideGithub, LucideLinkedin, LucideMail].map((Icon, i) => (
+              {[Github, Linkedin, Mail].map((Icon, i) => (
                 <Magnetic key={i}>
                   <div className="w-14 h-14 rounded-2xl border border-white/10 flex items-center justify-center hover:bg-white/5 transition-colors cursor-pointer text-zinc-400 hover:text-white">
                     <Icon size={22} />
